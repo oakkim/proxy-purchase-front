@@ -6,8 +6,8 @@ import '@material/mwc-dialog';
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-fab';
-import '@material/mwc-tab';
-import '@material/mwc-tab-bar';
+import { Tab } from '@material/mwc-tab';
+import { TabBar } from '@material/mwc-tab-bar';
 
 export class ProxyPurchase extends LitElement {
   @property({ type: String }) page = 'main';
@@ -46,13 +46,6 @@ export class ProxyPurchase extends LitElement {
       bottom: 0px;
       z-index: 999;
     }
-
-    #floating-button {
-      position: fixed;
-      right: 20px;
-      bottom: 100px;
-      z-index: 9999;
-    }
   `;
 
   render() {
@@ -63,35 +56,41 @@ export class ProxyPurchase extends LitElement {
           <div slot="title" id="title">대리구매</div>
 
           <div id="main">
-            <mwc-fab
-              id="floating-button"
-              icon="add"
-              extended
-              label="대리구매 요청하기"
-            ></mwc-fab>
-
             <mwc-tab-bar id="tab-bar">
               <mwc-tab
+                id="tab-list-order"
                 label="주문 리스트"
                 icon="list"
                 stacked
                 isMinWidthIndicator
+                @click=${this.showListView}
               ></mwc-tab>
               <mwc-tab
+                id="tab-create-order"
                 label="주문 만들기"
                 icon="add_circle"
                 stacked
                 isMinWidthIndicator
+                @click=${this.showCreateView}
               ></mwc-tab>
               <mwc-tab
+                id="tab-show-my-order"
                 label="내 주문 보기"
                 icon="account_circle"
                 stacked
                 isMinWidthIndicator
+                @click=${this.showMyOrderView}
               ></mwc-tab>
             </mwc-tab-bar>
 
-            <order-list-view></order-list-view>
+            <order-list-view
+              id="order-list-view"
+              @floatingButtonClick=${this.showCreateView}
+            ></order-list-view>
+            <order-create-view
+              id="order-create-view"
+              class="hide"
+            ></order-create-view>
           </div>
         </mwc-top-app-bar-fixed>
 
@@ -127,6 +126,42 @@ export class ProxyPurchase extends LitElement {
   onLoginFailed() {
     const dialog = this.shadowRoot?.getElementById('dialog-login-failed');
     dialog?.setAttribute('open', '');
+  }
+
+  hideAllMenu() {
+    const listView = this.shadowRoot?.getElementById('order-list-view');
+    const createView = this.shadowRoot?.getElementById('order-create-view');
+
+    if (listView) listView.className = 'hide';
+    if (createView) createView.className = 'hide';
+  }
+
+  showListView() {
+    this.hideAllMenu();
+    const listView = this.shadowRoot?.getElementById('order-list-view');
+    if (listView) listView.className = '';
+
+    const tabBar = this.getTabBar();
+    if (tabBar) tabBar.activeIndex = 0;
+  }
+
+  showCreateView() {
+    this.hideAllMenu();
+    const createView = this.shadowRoot?.getElementById('order-create-view');
+    if (createView) createView.className = '';
+
+    const tabBar = this.getTabBar();
+    if (tabBar) tabBar.activeIndex = 1;
+  }
+
+  showMyOrderView() {
+    this.hideAllMenu();
+    const tabBar = this.getTabBar();
+    if (tabBar) tabBar.activeIndex = 2;
+  }
+
+  getTabBar(): TabBar {
+    return this.shadowRoot?.getElementById('tab-bar') as TabBar;
   }
 }
 

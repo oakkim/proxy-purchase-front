@@ -13,6 +13,13 @@ export class OrderListView extends LitElement {
       margin-left: auto;
       margin-right: auto;
     }
+
+    #floating-button {
+      position: fixed;
+      right: 20px;
+      bottom: 100px;
+      z-index: 9999;
+    }
   `;
 
   render() {
@@ -40,6 +47,13 @@ export class OrderListView extends LitElement {
     order.commission = 1000;
 
     return html`
+      <mwc-fab
+        id="floating-button"
+        icon="add"
+        extended
+        label="대리구매 요청하기"
+        @click=${this.onFloatingButtonClicked}
+      ></mwc-fab>
       <mwc-list id="order-list">
         <order-item .order=${order}></order-item>
         <order-item .order=${order}></order-item>
@@ -48,5 +62,12 @@ export class OrderListView extends LitElement {
         <order-item .order=${order}></order-item>
       </mwc-list>
     `;
+  }
+
+  onFloatingButtonClicked() {
+    const event: CustomEvent = new CustomEvent('floatingButtonClick', {
+      detail: {},
+    });
+    this.dispatchEvent(event);
   }
 }
