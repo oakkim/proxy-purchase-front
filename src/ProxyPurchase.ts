@@ -6,8 +6,9 @@ import '@material/mwc-dialog';
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-fab';
-import { Tab } from '@material/mwc-tab';
-import { TabBar } from '@material/mwc-tab-bar';
+import '@material/mwc-tab';
+import '@material/mwc-tab-bar';
+import * as MWCTabBar from '@material/mwc-tab-bar';
 
 export class ProxyPurchase extends LitElement {
   @property({ type: String }) page = 'main';
@@ -160,8 +161,8 @@ export class ProxyPurchase extends LitElement {
     if (tabBar) tabBar.activeIndex = 2;
   }
 
-  getTabBar(): TabBar {
-    return this.shadowRoot?.getElementById('tab-bar') as TabBar;
+  getTabBar(): MWCTabBar.TabBar {
+    return this.shadowRoot?.getElementById('tab-bar') as MWCTabBar.TabBar;
   }
 }
 

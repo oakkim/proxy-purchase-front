@@ -7,9 +7,14 @@ import { Order } from '../model/order.js';
 import { User } from '../model/user.js';
 import { Goods } from '../model/goods.js';
 
+import '@material/mwc-dialog';
+
 export class OrderCreateView extends LitElement {
   @property({ type: Object })
   order!: Order;
+
+  @property({ type: Boolean })
+  open = false;
 
   static styles = css`
     :host {
@@ -49,6 +54,10 @@ export class OrderCreateView extends LitElement {
     #total-fee {
       font-size: 15px;
       margin: 0px 15px 15px 15px;
+    }
+
+    mwc-textfield {
+      margin-bottom: 5px;
     }
   `;
 
@@ -91,7 +100,10 @@ export class OrderCreateView extends LitElement {
         </mwc-list>
 
         <div style="text-align: center;">
-          <mwc-icon-button icon="add"></mwc-icon-button>
+          <mwc-icon-button
+            icon="add"
+            @click=${this.onPlusButtonClicked}
+          ></mwc-icon-button>
         </div>
 
         <div id="total-price">
@@ -111,6 +123,34 @@ export class OrderCreateView extends LitElement {
         </div>
         <mwc-button raised label="생성" style="margin-left: 15px;"></mwc-button>
       </div>
+      <mwc-dialog id="dialog" heading="상품 추가하기">
+        <p>구매대행하려는 상품의 정보를 입력해주세요.</p>
+        <mwc-textfield
+          id="tf-name"
+          maxlength="64"
+          placeholder="상품명"
+          required
+        >
+        </mwc-textfield
+        ><br />
+        <mwc-textfield id="tf-price" type="number" placeholder="가격" required>
+        </mwc-textfield
+        ><br />
+        <mwc-textfield id="tf-ea" type="number" placeholder="개수" required>
+        </mwc-textfield>
+
+        <mwc-button id="primary-action-button" slot="primaryAction">
+          추가
+        </mwc-button>
+        <mwc-button slot="secondaryAction" dialogAction="close">
+          취소
+        </mwc-button>
+      </mwc-dialog>
     `;
+  }
+
+  onPlusButtonClicked() {
+    const dialog = this.shadowRoot?.getElementById('dialog');
+    dialog?.setAttribute('open', '');
   }
 }
