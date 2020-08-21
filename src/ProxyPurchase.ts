@@ -33,6 +33,12 @@ export class ProxyPurchase extends LitElement {
             align-items: center;
             height: 100%;
         }
+
+        #order-list {
+            width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
     `;
 
 
@@ -64,7 +70,7 @@ export class ProxyPurchase extends LitElement {
             <div style="height: 100%;">
                 <mwc-top-app-bar-fixed id="bar" class="${id ? "" : "hide"}">
                     <div slot="title" id="title">대리구매</div>
-                    <mwc-list>
+                    <mwc-list id="order-list">
                         <order-item .order=${order}></order-item>
                         <order-item .order=${order}></order-item>
                         <order-item .order=${order}></order-item>

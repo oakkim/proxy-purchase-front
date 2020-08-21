@@ -18,7 +18,7 @@ export class OrderItem extends LitElement {
             background: white;
             border: 1px solid lightgray;
             border-radius: 5px;
-            padding-bottom: 30px;
+            padding-bottom: 35px;
             margin-bottom: 20px;
         }
 
@@ -29,12 +29,14 @@ export class OrderItem extends LitElement {
         #title {
             font-size: 25px;
             font-weight: bold;
-            padding: 20px 15px 15px 15px;
+            padding: 25px 15px 15px 15px;
         }
 
         #total-price {
-            font-size: 20px;
-            padding: 15px;
+            border-top: 1px solid lightgray;
+            font-size: 15px;
+            padding-top: 15px;
+            margin: 0px 15px 15px 15px;
         }
     `;
 
@@ -51,7 +53,7 @@ export class OrderItem extends LitElement {
                     `)}
                 </mwc-list>
                 <div id="total-price">총 주문 금액 : ${this.order?.goods?.reduce((acc, cur) => acc += cur.price * cur.ea, 0)}원</div>
-                <mwc-button label="수락" style="margin-left: 15px; padding-top: 15px;"></mwc-button>
+                <mwc-button raised label="수락" style="margin-left: 15px;"></mwc-button>
             </div>
         `;
     }
