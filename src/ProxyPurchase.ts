@@ -65,6 +65,7 @@ export class ProxyPurchase extends LitElement {
         order.id = "a1-2-21-2-32";
         order.goods = [goods1, goods2];
         order.requestee = user;
+        order.fee = 1000;
 
         return html`
             <div style="height: 100%;">
