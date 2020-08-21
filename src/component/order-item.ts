@@ -3,6 +3,7 @@ import '@material/mwc-button';
 import '@material/mwc-icon-button';
 import '@material/mwc-list';
 import { Order } from '../model/order.js';
+import { numberWithCommas } from '../utils/number-formatter.js';
 
 export class OrderItem extends LitElement {
   @property({ type: Object })
@@ -52,7 +53,9 @@ export class OrderItem extends LitElement {
             g => html`
               <mwc-list-item twoline>
                 <span>${g.name}</span>
-                <span slot="secondary">${g.price}원, ${g.ea}개</span>
+                <span slot="secondary"
+                  >${numberWithCommas(g.price)}원, ${g.ea}개</span
+                >
               </mwc-list-item>
             `
           )}
@@ -60,15 +63,19 @@ export class OrderItem extends LitElement {
         <div id="total-price">
           <span>총 주문 금액 : </span>
           <span style="float: right;"
-            >${this.order?.goods?.reduce(
-              (acc, cur) => (acc += cur.price * cur.ea),
-              0
+            >${numberWithCommas(
+              this.order?.goods?.reduce(
+                (acc, cur) => (acc += cur.price * cur.ea),
+                0
+              )
             )}원</span
           >
         </div>
         <div id="total-fee">
           <span>수수료 금액 : </span>
-          <span style="float: right;">${this.order?.commission}원</span>
+          <span style="float: right;"
+            >${numberWithCommas(this.order?.commission)}원</span
+          >
         </div>
         <mwc-button raised label="수락" style="margin-left: 15px;"></mwc-button>
       </div>

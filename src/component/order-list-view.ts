@@ -17,7 +17,7 @@ export class OrderListView extends LitElement {
     #floating-button {
       position: fixed;
       right: 20px;
-      bottom: 100px;
+      bottom: 90px;
       z-index: 9999;
     }
   `;

@@ -1,7 +1,7 @@
 import firebase from './firebase.js';
 import { Order } from '../model/order.js';
 
-function requestCreate(order: Order) {
+function createOrder(order: Order) {
   return firebase
     .database()
     .ref('/request/')
@@ -15,4 +15,4 @@ function requestCreate(order: Order) {
     });
 }
 
-export { requestCreate };
+export { createOrder };

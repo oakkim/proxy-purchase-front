@@ -6,7 +6,7 @@ export class Order {
   id!: string;
   requester!: User;
   responser!: User;
-  goods!: Goods[];
+  goods: Goods[] = [];
   commission!: number;
   status!: OrderStatus;
   createdAt!: Date;

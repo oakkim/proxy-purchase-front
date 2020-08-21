@@ -1,12 +1,19 @@
 import firebase from './firebase.js';
 import { Goods } from '../model/goods.js';
 
-function createGoods(goods: Goods) {
-  return firebase.database().ref('/goods/').push({
-    name: goods.name,
-    price: goods.price,
-    count: goods.ea,
-  });
+function createGoods(goods: Goods, callback: (g: Goods) => any) {
+  return firebase
+    .database()
+    .ref('/goods/')
+    .push({
+      name: goods.name,
+      price: goods.price,
+      count: goods.ea,
+    })
+    .then(r => {
+      goods.id = r.key ?? '';
+      callback && callback(goods);
+    });
 }
 //on 전체 조회
 //function readGoods(callback: (g: Goods) => any){

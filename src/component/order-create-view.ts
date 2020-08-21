@@ -2,12 +2,17 @@ import { LitElement, html, css, property } from 'lit-element';
 import '@material/mwc-button';
 import '@material/mwc-icon-button';
 import '@material/mwc-list';
-import '@material/mwc-textfield';
+import { TextField } from '@material/mwc-textfield';
 import { Order } from '../model/order.js';
 import { User } from '../model/user.js';
 import { Goods } from '../model/goods.js';
 
-import '@material/mwc-dialog';
+import { Dialog } from '@material/mwc-dialog';
+
+import { createOrder } from '../firebase/order-repository.js';
+import { createGoods } from '../firebase/goods-repository.js';
+
+import { numberWithCommas } from '../utils/number-formatter.js';
 
 export class OrderCreateView extends LitElement {
   @property({ type: Object })
@@ -18,11 +23,14 @@ export class OrderCreateView extends LitElement {
 
   static styles = css`
     :host {
+      display: block;
       height: 100%;
+      margin-left: 20px;
+      margin-right: 20px;
     }
 
     #main {
-      width: 500px;
+      max-width: 500px;
       margin-left: auto;
       margin-right: auto;
 
@@ -61,27 +69,15 @@ export class OrderCreateView extends LitElement {
     }
   `;
 
+  constructor() {
+    super();
+    if (!this.order) {
+      this.order = new Order();
+      this.order.goods = [];
+    }
+  }
+
   render() {
-    const user = new User();
-    user.name = '김대용';
-
-    const goods1 = new Goods();
-    goods1.id = 'goods-1';
-    goods1.ea = 4;
-    goods1.name = '초코파이';
-    goods1.price = 5000;
-
-    const goods2 = new Goods();
-    goods2.id = 'goods-2';
-    goods2.ea = 2;
-    goods2.name = '포카칩';
-    goods2.price = 1500;
-
-    this.order = new Order();
-    this.order.id = 'a1-2-21-2-32';
-    this.order.goods = [goods1, goods2];
-    this.order.requester = user;
-    this.order.commission = 1000;
     return html`
       <div id="main">
         <div id="title">주문요청 만들기</div>
@@ -109,19 +105,27 @@ export class OrderCreateView extends LitElement {
         <div id="total-price">
           <span>총 주문 금액 : </span>
           <span style="float: right;"
-            >${this.order?.goods?.reduce(
-              (acc, cur) => (acc += cur.price * cur.ea),
-              0
+            >${numberWithCommas(
+              this.order?.goods?.reduce(
+                (acc, cur) => (acc += cur.price * cur.ea),
+                0
+              )
             )}원</span
           >
         </div>
         <div id="total-fee">
           <span>수수료 금액 : </span>
           <span style="float: right;"
-            ><mwc-textfield label="수수료"></mwc-textfield>원</span
+            ><mwc-textfield label=""></mwc-textfield>원</span
           >
         </div>
-        <mwc-button raised label="생성" style="margin-left: 15px;"></mwc-button>
+        <div style="clear:both;">
+          <mwc-button
+            raised
+            label="생성"
+            style="margin-left: 15px; clear: both;"
+          ></mwc-button>
+        </div>
       </div>
       <mwc-dialog id="dialog" heading="상품 추가하기">
         <p>구매대행하려는 상품의 정보를 입력해주세요.</p>
@@ -133,17 +137,40 @@ export class OrderCreateView extends LitElement {
         >
         </mwc-textfield
         ><br />
-        <mwc-textfield id="tf-price" type="number" placeholder="가격" required>
+        <mwc-textfield
+          id="tf-price"
+          type="number"
+          placeholder="가격"
+          min="1"
+          required
+        >
         </mwc-textfield
         ><br />
-        <mwc-textfield id="tf-ea" type="number" placeholder="개수" required>
+        <mwc-textfield
+          id="tf-ea"
+          type="number"
+          placeholder="개수"
+          min="1"
+          required
+        >
         </mwc-textfield>
 
-        <mwc-button id="primary-action-button" slot="primaryAction">
+        <mwc-button
+          id="primary-action-button"
+          slot="primaryAction"
+          @click=${this.onActionButtonClicked}
+        >
           추가
         </mwc-button>
         <mwc-button slot="secondaryAction" dialogAction="close">
           취소
+        </mwc-button>
+      </mwc-dialog>
+
+      <mwc-dialog id="dialog-goods-error" heading="오류!">
+        <p>상품을 추가하던 도중에 오류가 발생하였습니다.</p>
+        <mwc-button slot="primaryAction" dialogAction="discard">
+          확인
         </mwc-button>
       </mwc-dialog>
     `;
@@ -152,5 +179,50 @@ export class OrderCreateView extends LitElement {
   onPlusButtonClicked() {
     const dialog = this.shadowRoot?.getElementById('dialog');
     dialog?.setAttribute('open', '');
+  }
+
+  onActionButtonClicked() {
+    const tfName = this.shadowRoot?.getElementById('tf-name') as TextField;
+    const tfPrice = this.shadowRoot?.getElementById('tf-price') as TextField;
+    const tfEa = this.shadowRoot?.getElementById('tf-ea') as TextField;
+
+    if (tfName && !tfName.checkValidity()) {
+      tfName.reportValidity();
+      return;
+    }
+
+    if (tfPrice && !tfPrice.checkValidity()) {
+      tfPrice.reportValidity();
+      return;
+    }
+
+    if (tfEa && !tfEa.checkValidity()) {
+      tfEa.reportValidity();
+      return;
+    }
+
+    const goods: Goods = new Goods();
+    goods.name = tfName.value;
+    goods.price = Number.parseInt(tfPrice.value);
+    goods.ea = Number.parseInt(tfEa.value);
+
+    createGoods(goods, g => {
+      tfName.value = '';
+      tfPrice.value = '';
+      tfEa.value = '';
+
+      const dialog = this.shadowRoot?.getElementById('dialog') as Dialog;
+      if (dialog) dialog.close();
+
+      if (!g || g.id == '') {
+        const dialogGoodsError = this.shadowRoot?.getElementById(
+          'dialog-goods-error'
+        ) as Dialog;
+        if (dialogGoodsError) dialogGoodsError.setAttribute('open', '');
+        return;
+      }
+      this.order.goods.push(g);
+      this.requestUpdate();
+    });
   }
 }
