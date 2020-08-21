@@ -4,20 +4,18 @@ import '@material/mwc-icon-button';
 import '@material/mwc-list';
 import { Order } from '../model/order.js';
 
-export class OrderItem extends LitElement {
+export class OrderCreateView extends LitElement {
   @property({ type: Object })
   order!: Order;
 
   static styles = css`
     #main {
-      max-width: 500px;
+      width: 500px;
       background: white;
       border: 1px solid lightgray;
       border-radius: 5px;
       padding-bottom: 15px;
       margin-bottom: 20px;
-      margin-left: 20px;
-      margin-right: 20px;
     }
 
     #btn-login {
@@ -46,7 +44,7 @@ export class OrderItem extends LitElement {
   render() {
     return html`
       <div id="main">
-        <div id="title">${this.order?.requester?.name}님의 주문요청</div>
+        <div id="title">주문요청 만들기</div>
         <mwc-list>
           ${this.order?.goods?.map(
             g => html`

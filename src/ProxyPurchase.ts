@@ -6,11 +6,8 @@ import '@material/mwc-dialog';
 import '@material/mwc-list';
 import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-fab';
-
-import Cookies from 'js-cookie';
-import { Order } from './model/order.js';
-import { Goods } from './model/goods.js';
-import { User } from './model/user.js';
+import '@material/mwc-tab';
+import '@material/mwc-tab-bar';
 
 export class ProxyPurchase extends LitElement {
   @property({ type: String }) page = 'main';
@@ -41,34 +38,25 @@ export class ProxyPurchase extends LitElement {
       margin-right: auto;
     }
 
-    #main {
+    #tab-bar {
+      box-shadow: 0px -5px -5px rgba(0, 0, 0, 0.034);
+      background-color: white;
+      width: 100%;
+      position: fixed;
+      bottom: 0px;
+      z-index: 999;
+    }
+
+    #floating-button {
+      position: fixed;
+      right: 20px;
+      bottom: 100px;
+      z-index: 9999;
     }
   `;
 
   render() {
     const id: string | null = window.localStorage.getItem('user-id');
-
-    const user = new User();
-    user.name = '김대용';
-
-    const goods1 = new Goods();
-    goods1.id = 'goods-1';
-    goods1.ea = 4;
-    goods1.name = '초코파이';
-    goods1.price = 5000;
-
-    const goods2 = new Goods();
-    goods2.id = 'goods-2';
-    goods2.ea = 2;
-    goods2.name = '포카칩';
-    goods2.price = 1500;
-
-    const order = new Order();
-    order.id = 'a1-2-21-2-32';
-    order.goods = [goods1, goods2];
-    order.requester = user;
-    order.commission = 1000;
-
     return html`
       <div style="height: 100%;">
         <mwc-top-app-bar-fixed id="bar" class="${id ? '' : 'hide'}">
@@ -76,19 +64,34 @@ export class ProxyPurchase extends LitElement {
 
           <div id="main">
             <mwc-fab
+              id="floating-button"
               icon="add"
               extended
               label="대리구매 요청하기"
-              style="position: absolute; right: 20px; bottom: 20px;"
             ></mwc-fab>
 
-            <mwc-list id="order-list">
-              <order-item .order=${order}></order-item>
-              <order-item .order=${order}></order-item>
-              <order-item .order=${order}></order-item>
-              <order-item .order=${order}></order-item>
-              <order-item .order=${order}></order-item>
-            </mwc-list>
+            <mwc-tab-bar id="tab-bar">
+              <mwc-tab
+                label="주문 리스트"
+                icon="list"
+                stacked
+                isMinWidthIndicator
+              ></mwc-tab>
+              <mwc-tab
+                label="주문 만들기"
+                icon="add_circle"
+                stacked
+                isMinWidthIndicator
+              ></mwc-tab>
+              <mwc-tab
+                label="내 주문 보기"
+                icon="account_circle"
+                stacked
+                isMinWidthIndicator
+              ></mwc-tab>
+            </mwc-tab-bar>
+
+            <order-list-view></order-list-view>
           </div>
         </mwc-top-app-bar-fixed>
 
